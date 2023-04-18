@@ -1,0 +1,18 @@
+.todo__list {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 800px;
+  border: 1px solid lightgray;
+  margin-bottom: 10px !important;
+}
+@media (max-width: 768px) {
+  .todo__list {
+    width: 600px;
+  }
+}
+@media (max-width: 576px) {
+  .todo__list {
+    width: 400px;
+  }
+}

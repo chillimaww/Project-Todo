@@ -4,17 +4,25 @@ import Todo from "./components/Todo";
 import { db } from "./firebase.js";
 import {
   collection,
+  query,
+  orderBy,
   onSnapshot,
   serverTimestamp,
   addDoc,
 } from "firebase/firestore";
 import "./App.css";
+const q = query(collection(db, "todos"), orderBy("timestamp", "desc"));
 function App() {
   const [todos, setTodos] = useState([]);
   const [input, setInput] = useState("");
   useEffect(() => {
-    onSnapshot(collection(db, "todos"), (snapshot) => {
-      setTodos(snapshot.docs.map((doc) => doc.data()));
+    onSnapshot(q, (snapshot) => {
+      setTodos(
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          item: doc.data(),
+        }))
+      );
     });
   }, [input]);
   const addTodo = (e) => {
@@ -43,8 +51,8 @@ function App() {
         </Button>
       </form>
       <ul>
-        {todos.map(({ todo }) => (
-          <Todo todo={todo} />
+        {todos.map((item) => (
+          <Todo key={item.id} arr={item} />
         ))}
       </ul>
     </div>
