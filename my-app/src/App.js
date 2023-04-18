@@ -1,25 +1,39 @@
-import React, { useState } from "react";
-import { TextFields, Button, TextField } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { TextField, Button } from "@mui/material";
+import Todo from "./components/Todo";
+import { db } from "./firebase.js";
+import {
+  collection,
+  onSnapshot,
+  serverTimestamp,
+  addDoc,
+} from "firebase/firestore";
 import "./App.css";
-
 function App() {
-  const [todos, setTodos] = useState(["Terminar la ToDo", "Bañarse"]);
-
+  const [todos, setTodos] = useState([]);
   const [input, setInput] = useState("");
+  useEffect(() => {
+    onSnapshot(collection(db, "todos"), (snapshot) => {
+      setTodos(snapshot.docs.map((doc) => doc.data()));
+    });
+  }, [input]);
   const addTodo = (e) => {
     e.preventDefault();
-    setTodos([...todos, input]);
+    addDoc(collection(db, "todos"), {
+      todo: input,
+      timestamp: serverTimestamp(),
+    });
     setInput("");
   };
   return (
     <div className="App">
-      <h2> ToDo List App </h2>
+      <h2> TODO List App</h2>
       <form>
         <TextField
           id="outlined-basic"
           label="Make Todo"
           variant="outlined"
-          style={{ margin: "0px 5px0" }}
+          style={{ margin: "0px 5px" }}
           size="small"
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -29,8 +43,8 @@ function App() {
         </Button>
       </form>
       <ul>
-        {todos.map((todo) => (
-          <li>{todo}</li>
+        {todos.map(({ todo }) => (
+          <Todo todo={todo} />
         ))}
       </ul>
     </div>
